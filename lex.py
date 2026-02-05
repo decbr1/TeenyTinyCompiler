@@ -60,6 +60,40 @@ class Lexer:
                 token = Token(self.cur_char, TokenType.NEWLINE)
             case '\0':
                 token = Token(self.cur_char, TokenType.EOF)
+
+            case '=':
+                if self.peek() == '=':
+                    last_char = self.cur_char
+                    self.next_char()
+                    token = Token(last_char + self.cur_char, TokenType.EQEQ)
+                else:
+                    token = Token(self.cur_char, TokenType.EQ)
+
+            case '>':
+                if self.peek() == '=':
+                    last_char = self.cur_char
+                    self.next_char()
+                    token = Token(last_char, self.cur_char, TokenType.GTEQ)
+                else:
+                    token = Token(self.cur_char, TokenType.GT)
+
+            case '<':
+                if self.peek() == '=':
+                    last_char = self.cur_char
+                    self.next_char()
+                    token = Token(last_char + self.cur_char, TokenType.LTEQ)
+                else:
+                    token = Token(self.cur_char, TokenType.LT)
+
+            case '!':
+                if self.peek() == '=':
+                    last_char = self.cur_char
+                    self.next_char()
+                    token = Token(last_char + self.cur_char, TokenType.NOTEQ)
+                else:
+                    self.abort("Expected !=, got !" + self.peek())
+            
+
             case _:
                 self.abort("Unknown token: " + self.cur_char)
 
