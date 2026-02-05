@@ -1,13 +1,19 @@
 from lex import *
+from parse import *
 
 def main():
-    source = "F+-123 foo*THEN/"
-    lexer = Lexer(source)
+    print("teeny tiny compiler")
 
-    token = lexer.get_token()
-    while token.kind != TokenType.EOF:
-        print(token.kind)
-        token = lexer.get_token()
+    if len(sys.argv) != 2:
+        sys.exit("Error: Compilor needs source file as argument")
+    with open(sys.argv[1], 'r') as input_file:
+        source = input_file.read()
+
+    lexer = Lexer(source)
+    parser = Parser(lexer)
+
+    parser.program()  # start the parser
+    print("Parsing completed.")
 
 if __name__ == "__main__":
     main()

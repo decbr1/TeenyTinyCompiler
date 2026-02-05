@@ -96,6 +96,21 @@ class Lexer:
                 else:
                     self.abort("Expected !=, got !" + self.peek())
 
+            case '\"':
+                # get characters between quotations
+                self.next_char()
+                start_pos = self.cur_pos
+
+                while self.cur_char != '\"':
+                    # dont allow special characters in the string. no escape characters, newlines, tabs, or %
+                    # gon use c's printf on this string
+                    if self.cur_char == '\r' or self.cur_char == '\n' or self.cur_char == '\t' or self.cur_char == '\\' or self.cur_char == '%':
+                        self.abort("Illegal character in string.")
+                    self.next_char()
+
+                tok_text  = self.source[start_pos : self.cur_pos]  # substring
+                token = Token(tok_text, TokenType.STRING)
+
             case _:
                 if self.cur_char.isalnum():
                     # leading character is a letter, so this must be an ident or keyword
