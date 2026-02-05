@@ -72,7 +72,7 @@ class Parser:
             self.match(TokenType.ENDIF)
 
         # "WHILE" comparison "REPEAT" nl {statement} "ENDWHILE" nl
-        elif statement.check_token(TokenType.WHILE):
+        elif self.check_token(TokenType.WHILE):
             print("STATEMENT-WHILE")
             self.next_token()
             self.comparison()
@@ -87,34 +87,34 @@ class Parser:
             self.match(TokenType.ENDWHILE)
 
         # "LABEL" ident
-        elif self.checkToken(TokenType.LABEL):
+        elif self.check_token(TokenType.LABEL):
             print("STATEMENT-LABEL")
-            self.nextToken()
+            self.next_token()
             self.match(TokenType.IDENT)
 
         # "GOTO" ident
-        elif self.checkToken(TokenType.GOTO):
+        elif self.check_token(TokenType.GOTO):
             print("STATEMENT-GOTO")
-            self.nextToken()
+            self.next_token()
             self.match(TokenType.IDENT)
 
         # "LET" ident "=" expression
-        elif self.checkToken(TokenType.LET):
+        elif self.check_token(TokenType.LET):
             print("STATEMENT-LET")
-            self.nextToken()
+            self.next_token()
             self.match(TokenType.IDENT)
             self.match(TokenType.EQ)
             self.expression()
 
         # "INPUT" ident
-        elif self.checkToken(TokenType.INPUT):
+        elif self.check_token(TokenType.INPUT):
             print("STATEMENT-INPUT")
-            self.nextToken()
+            self.next_token()
             self.match(TokenType.IDENT)
 
         # error if not valid statement
         else:
-            self.abort("Invalid statement at " + self.curToken.text + " (" + self.curToken.kind.name + ")")
+            self.abort("Invalid statement at " + self.cur_token.text + " (" + self.cur_token.kind.name + ")")
 
         self.nl()
 
