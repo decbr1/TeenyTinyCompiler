@@ -38,13 +38,16 @@ class Lexer:
 
     def skip_comment(self):
         """Skip comments in the code."""
-        pass
+        if self.cur_char == '#':
+            while self.cur_char != '\n':
+                self.next_char()
 
     def get_token(self):
         """Return the next token."""
         # Check the first character of this token to see if we can decide what it is.
         # If it is a multiple character operator (e.g., !=), number, identifier, or keyword then we will process the rest
         self.skip_whitespace()
+        self.skip_comment()
         token = None
 
         match self.cur_char:
@@ -73,7 +76,7 @@ class Lexer:
                 if self.peek() == '=':
                     last_char = self.cur_char
                     self.next_char()
-                    token = Token(last_char, self.cur_char, TokenType.GTEQ)
+                    token = Token(last_char + self.cur_char, TokenType.GTEQ)
                 else:
                     token = Token(self.cur_char, TokenType.GT)
 
