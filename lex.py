@@ -95,10 +95,25 @@ class Lexer:
                     token = Token(last_char + self.cur_char, TokenType.NOTEQ)
                 else:
                     self.abort("Expected !=, got !" + self.peek())
-            
 
             case _:
-                self.abort("Unknown token: " + self.cur_char)
+                if self.cur_char.isalnum():
+                    # leading character is a letter, so this must be an ident or keyword
+                    # get all consecutive alpha numeric characters
+                    start_pos = self.cur_pos
+                    while self.peek().isalnum():
+                        self.next_char()
+
+                    # check if the token is in the list of keywords
+                    tok_text = self.source[start_pos : self.cur_pos + 1]  # substring
+                    keyword = Token.check_if_keyword(tok_text)
+                    if keyword == None:  # identifier
+                        token = Token(tok_text, TokenType.IDENT)
+                    else:  # keyword
+                        token = Token(tok_text, keyword)
+
+                else:
+                    self.abort("Unknown token: " + self.cur_char)
 
         self.next_char()
         return token
@@ -108,6 +123,14 @@ class Token:
     def __init__(self, token_text, token_kind):
         self.text = token_text  # literal
         self.kind = token_kind  # type classification
+
+    @staticmethod
+    def check_if_keyword(token_text):
+        for kind in TokenType:
+            # relies on all keyword enum values being 1xx
+            if kind.name == token_text and kind.value >= 100 and kind.value < 200:
+                return kind
+        return None
 
 
 class TokenType(enum.Enum):
