@@ -38,9 +38,74 @@ class Parser:
     def program(self):
         print("PROGRAM")
 
-        # parse all the statements in the program
+        while self.check_token(TokenType.NEWLINE):
+            self.next_token()
         while not self.check_token(TokenType.EOF):
             self.statement()
+
+    # comparison ::= expression (("==" | "!=" | ">" | ">=" | "<" | "<=") expression)+
+    def comparison(self):
+        print("COMPARISON")
+
+        self.expression()
+        # must be at least one comparison operator and another expression
+        if self.is_comparison_operator():
+            self.next_token()
+            self.expression()
+        else:
+            self.abort("Expected comparison operator at: " + self.cur_token.text)
+
+        # can have 0 or more comparison operator and expressions
+        while self.is_comparison_operator():
+            self.next_token()
+            self.expression()
+
+    def is_comparison_operator(self):
+        return (self.check_token(TokenType.GT)
+                or self.check_token(TokenType.GTEQ)
+                or self.check_token(TokenType.LT)
+                or self.check_token(TokenType.LTEQ)
+                or self.check_token(TokenType.EQEQ)
+                or self.check_token(TokenType.NOTEQ))
+
+    def expression(self):
+        print("EXPRESSION")
+
+        self.term()
+        # can have 0 or more +/- and expressions.
+        while self.check_token(TokenType.PLUS) or self.check_token(TokenType.MINUS):
+            self.next_token()
+            self.term()
+
+    # term ::= unary {( "/" | "*" ) unary}
+    def term(self):
+        print("TERM")
+
+        self.unary()
+        # can have 0 or more *// and expressions
+        while self.check_token(TokenType.ASTERISK) or self.check_token(TokenType.SLASH):
+            self.next_token()
+            self.unary()
+
+    # unary ::= ["+" | "-"] primary
+    def unary(self):
+        print("UNARY")
+
+        # option unary +/-
+        if self.check_token(TokenType.PLUS) or self.check_token(TokenType.MINUS):
+            self.next_token()
+        self.primary()
+
+    def primary(self):
+        print("PRIMARY (" + self.cur_token.text + ")")
+
+        if self.check_token(TokenType.NUMBER):
+            self.next_token()
+        elif self.check_token(TokenType.IDENT):
+            self.next_token()
+        else:
+            # error
+            self.abort("Unexpected token at " + self.cur_token.text)
 
     # one of the following statements
     def statement(self):
@@ -128,5 +193,3 @@ class Parser:
         while self.check_token(TokenType.NEWLINE):
             self.next_token()
 
-    def expression(self):
-        pass
